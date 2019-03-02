@@ -21,6 +21,11 @@ STRUCTURE
 /src/config/database.js
 
 REST
+POST    /auth/login
+GET     /auth/logout
+POST    /auth/register
+GET     /auth/user
+
 POST	/authors/author
 GET		/authors/author/:id
 PUT		/authors/author/:id
