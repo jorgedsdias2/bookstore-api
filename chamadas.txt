@@ -1,0 +1,68 @@
+STRUCTURE
+/server.js
+/src/app/auth/verify-token.js
+/src/app/db/author.js
+/src/app/db/book.js
+/src/app/db/category.js
+/src/app/db/user.js
+/src/app/infra/author-dao.js
+/src/app/infra/book-dao.js
+/src/app/infra/category-dao.js
+/src/app/infra/user-dao.js
+/src/app/logs
+/src/app/public/uploads
+/src/app/routes/auth.js
+/src/app/routes/authors.js
+/src/app/routes/books.js
+/src/app/routes/categories.js
+/src/app/routes/users.js
+/src/app/services/logger.js
+/src/config/custom-express.js
+/src/config/database.js
+
+REST
+POST	/authors/author
+GET		/authors/author/:id
+PUT		/authors/author/:id
+DELETE	/authors/author/:id
+
+POST	/books/book
+GET		/books/book/:id
+PUT		/books/book/:id
+DELETE	/books/book/:id
+
+POST	/categories/category
+GET		/categories/category/:id
+PUT		/categories/category/:id
+DELETE	/categories/category/:id
+
+POST	/users/user
+GET		/users/user/:id
+PUT		/users/user/:id
+DELETE	/users/user/:id
+
+TABLES
+authors
+id
+name
+
+books
+id
+author_id
+title
+price
+description
+
+categories
+id
+name
+
+categories_books
+id
+category_id
+book_id
+
+users
+id
+email
+password
