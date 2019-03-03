@@ -25,8 +25,8 @@ module.exports = () => {
         res.status(200).send('API works.');
     });
 
-    const users = require(__root + 'src/app/routes/users');
-    app.use('/api/users', users);
+    const auth = require(__root + 'src/app/routes/auth');
+    app.use('/api/auth', auth);
 
     return app;
 }
