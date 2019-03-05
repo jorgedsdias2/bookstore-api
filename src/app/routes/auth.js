@@ -7,6 +7,27 @@ const jwt = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
 const env = require(__root + 'src/config/environment');
 
+router.post('/login', function(req, res) {
+
+    User.findOne({email: req.body.email}, function(err, user) {
+        if(err) return res.status(500).send(err);
+        if(!user) return res.status(404).send({message: 'No user found.'});
+
+        const passwordIsValid = bcryptjs.compareSync(req.body.password, user.password);
+        if(!passwordIsValid) return res.status(401).send({auth: false, token: null});
+
+        const token = jwt.sign({id: user._id}, env.secret, {
+            expiresIn: 86400 // expires in 24 hours
+        });
+
+        res.status(200).send({auth: true, token: token});
+    });
+});
+
+router.get('/logout', function(req, res) {
+    res.status(200).send({auth: false, token: null});
+});
+
 router.post('/register', function(req, res) {
     
     const hashedPassword = bcryptjs.hashSync(req.body.password, 8);
@@ -19,16 +40,16 @@ router.post('/register', function(req, res) {
             expiresIn: 86400 // expires in 24 hours
         });
 
-        res.status(200).json({auth: true, token: token});
+        res.status(200).send({auth: true, token: token});
     });
 });
 
 router.get('/me', verifyToken, function(req, res) {
     User.findById(req.userId, {password: 0}, function(err, user) {
         if(err) return res.status(500).send(err);
-        if(!user) return res.status(404).send('No user found.');
+        if(!user) return res.status(404).send({message: 'No user found.'});
             
-        res.status(200).json(user);
+        res.status(200).send(user);
     });
 });
 

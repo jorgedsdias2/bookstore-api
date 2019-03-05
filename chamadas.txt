@@ -24,7 +24,7 @@ REST
 POST    /auth/login
 GET     /auth/logout
 POST    /auth/register
-GET     /auth/user
+GET     /auth/me
 
 POST	/authors/author
 GET		/authors/author/:id
