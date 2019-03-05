@@ -32,7 +32,7 @@ router.get('/author/:id', verifyToken, function(req, res) {
     Author.findById(id)
     .then(author => {
         if(!author) {
-            message = 'Author not found - ID: ' + author.id;
+            message = 'Author not found - ID: ' + id;
             status = 404;
         } else {
             message = 'Author found - ID: ' + author.id;
