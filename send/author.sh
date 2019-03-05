@@ -1,0 +1,2 @@
+curl http://localhost:3000/api/authors/author -v -H "Content-type: application/json" -H "x-access-token: {TOKEN}" -d @author.json | json_pp
+curl http://localhost:3000/api/authors/author/5c7e89c6b12404121805f63d -v -H "Content-type: application/json" -H "x-access-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjN2JlZjdjMjQ0NDQzMjY3YzdkYjE1OCIsImlhdCI6MTU1MTc5NTYzMCwiZXhwIjoxNTUxODgyMDMwfQ.d-K2QTNWerzyveS74RbQXivuHEHc1b8j-4nlX3bERzk" | json_pp

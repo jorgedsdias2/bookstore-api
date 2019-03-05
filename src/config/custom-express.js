@@ -26,7 +26,10 @@ module.exports = () => {
     });
 
     const auth = require(__root + 'src/app/routes/auth');
+    const authors = require(__root + 'src/app/routes/authors');
+    
     app.use('/api/auth', auth);
+    app.use('/api/authors', authors);
 
     return app;
 }

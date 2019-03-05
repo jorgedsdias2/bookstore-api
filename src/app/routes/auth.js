@@ -8,6 +8,12 @@ const bcryptjs = require('bcryptjs');
 const env = require(__root + 'src/config/environment');
 
 router.post('/login', function(req, res) {
+    req.assert('email', 'Email can not be empty or invalid').notEmpty().isEmail();
+    req.assert('password', 'Password can not be empty').notEmpty();
+
+    const validationErrors = req.validationErrors(true);
+
+    if(validationErrors) return res.status(400).send(validationErrors);
 
     User.findOne({email: req.body.email}, function(err, user) {
         if(err) return res.status(500).send(err);
@@ -29,6 +35,12 @@ router.get('/logout', function(req, res) {
 });
 
 router.post('/register', function(req, res) {
+    req.assert('email', 'Email can not be empty or invalid').notEmpty().isEmail();
+    req.assert('password', 'Password can not be empty').notEmpty();
+
+    const validationErrors = req.validationErrors(true);
+
+    if(validationErrors) return res.status(400).send(validationErrors);
     
     const hashedPassword = bcryptjs.hashSync(req.body.password, 8);
     const userdata = {email: req.body.email, password: hashedPassword};
