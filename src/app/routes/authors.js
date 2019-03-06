@@ -11,7 +11,7 @@ router.post('/author', verifyToken, function(req, res) {
 
     const validationErrors = req.validationErrors(true);
 
-    if(validationErrors) return res.status(400).send(validationErrors);
+    if(validationErrors) return res.status(400).send({error: validationErrors});
 
     Author.create(req.body)
     .then(author => {
