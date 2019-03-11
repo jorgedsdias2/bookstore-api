@@ -2,67 +2,95 @@ const express = require('express');
 const router = express.Router();
 const User = require(__root + 'src/app/db/user');
 const verifyToken = require(__root + 'src/app/auth/verify-token');
+const logger = require(__root + 'src/app/services/logger');
 
 const jwt = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
 const env = require(__root + 'src/config/environment');
 
 router.post('/login', function(req, res) {
+    let message;
+
     req.assert('email', 'Email can not be empty or invalid').notEmpty().isEmail();
     req.assert('password', 'Password can not be empty').notEmpty();
 
     const validationErrors = req.validationErrors(true);
 
-    if(validationErrors) return res.status(400).send(validationErrors);
+    if(validationErrors) return res.status(400).json(validationErrors);
 
     User.findOne({email: req.body.email}, function(err, user) {
-        if(err) return res.status(500).send(err);
-        if(!user) return res.status(404).send({message: 'No user found.'});
+        if(err) return handleError(res, err);
 
         const passwordIsValid = bcryptjs.compareSync(req.body.password, user.password);
-        if(!passwordIsValid) return res.status(401).send({auth: false, token: null});
-
-        const token = jwt.sign({id: user._id}, env.secret, {
-            expiresIn: 86400 // expires in 24 hours
-        });
-
-        res.status(200).send({auth: true, token: token});
+        if(user && passwordIsValid) {
+            const token = jwt.sign({id: user._id}, env.secret, {
+                expiresIn: 86400 // expires in 24 hours
+            });
+    
+            message = 'User ' + user.name + ' is authenticated';
+            logger.info(message);
+            res.status(200).json({message: message, token: token});
+        } else {
+            message = 'Authentication failed for User: ' + req.body.email;
+            logger.info(message);
+            return res.status(401).json({message: message});
+        }
     });
 });
 
 router.get('/logout', function(req, res) {
-    res.status(200).send({auth: false, token: null});
+    res.status(200).json({token: null});
 });
 
 router.post('/register', function(req, res) {
+    let message;
+
     req.assert('email', 'Email can not be empty or invalid').notEmpty().isEmail();
+    req.assert('name', 'Name can not be empty').notEmpty();
     req.assert('password', 'Password can not be empty').notEmpty();
 
     const validationErrors = req.validationErrors(true);
 
-    if(validationErrors) return res.status(400).send(validationErrors);
+    if(validationErrors) return res.status(400).json(validationErrors);
     
     const hashedPassword = bcryptjs.hashSync(req.body.password, 8);
-    const userdata = {email: req.body.email, password: hashedPassword};
+    const userdata = {email: req.body.email, name: req.body.name, password: hashedPassword};
 
     User.create(userdata, function(err, user) {
-        if(err) return res.status(500).send(err);
+        if(err) return handleError(res, err);
 
         const token = jwt.sign({id: user._id}, env.secret, {
             expiresIn: 86400 // expires in 24 hours
         });
 
-        res.status(200).send({auth: true, token: token});
+        message = user.name + ' registered';
+        logger.info(message);
+        res.status(200).json({message: message, token: token});
     });
 });
 
 router.get('/me', verifyToken, function(req, res) {
-    User.findById(req.userId, {password: 0}, function(err, user) {
-        if(err) return res.status(500).send(err);
-        if(!user) return res.status(404).send({message: 'No user found.'});
-            
-        res.status(200).send(user);
+    User.findById(req.userId, function(err, user) {
+        if(err) return handleError(res, err);
+
+        if(!user) {
+            message = 'User not authorized';
+            logger.info(message);
+            return res.status(401).json({message: message});
+        }
+
+        res.status(200).json({user: user});
     });
 });
+
+function handleError(res, err) {
+    if (err instanceof Error) {
+        logger.info(err.message);
+        return res.status(500).json({ error: err.message });
+    }
+
+    logger.info(err);
+    return res.status(500).json(err);
+}
 
 module.exports = router;

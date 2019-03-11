@@ -6,12 +6,13 @@ const UserSchema = new mongoose.Schema({
         type: String,
         unique: true
     },
+    name: String,
     password: String
 });
 
 const User = mongoose.model('User', UserSchema);
 
-userdata = {email: 'admin@bookstore.com.br', password: bcryptjs.hashSync('admin', 8)};
+userdata = {email: 'admin@bookstore.com.br', name: 'Admin', password: bcryptjs.hashSync('admin', 8)};
 User.findOneAndUpdate({email: userdata.email}, userdata, {upsert: true}, function (err, user) {
     if(err) console.log(err);
     if(!user) {

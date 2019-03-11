@@ -3,9 +3,19 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const expressValidator = require('express-validator');
 const database = require(__root + 'src/config/database');
+const morgan = require('morgan');
+const logger = require(__root + 'src/app/services/logger');
 
 module.exports = () => {
     const app = express();
+    
+    app.use(morgan("common", {
+        stream: {
+            write: function(mensagem) {
+                logger.info(mensagem);
+            }
+        }
+    }));
 
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(bodyParser.json());
@@ -22,7 +32,7 @@ module.exports = () => {
     app.use(expressValidator());
     
     app.get('/api', function(req, res) {
-        res.status(200).send('API works.');
+        res.status(200).json({message: 'API works.'});
     });
 
     const auth = require(__root + 'src/app/routes/auth');
