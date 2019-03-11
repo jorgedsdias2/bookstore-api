@@ -18,9 +18,7 @@ router.post('/login', function(req, res) {
 
     if(validationErrors) return res.status(400).json(validationErrors);
 
-    User.findOne({email: req.body.email}, function(err, user) {
-        if(err) return handleError(res, err);
-
+    User.findOne({email: req.body.email}).then(user => {
         const passwordIsValid = bcryptjs.compareSync(req.body.password, user.password);
         if(user && passwordIsValid) {
             const token = jwt.sign({id: user._id}, env.secret, {
@@ -35,6 +33,8 @@ router.post('/login', function(req, res) {
             logger.info(message);
             return res.status(401).json({message: message});
         }
+    }).catch(err => {
+        handleError(res, err);
     });
 });
 
@@ -56,9 +56,7 @@ router.post('/register', function(req, res) {
     const hashedPassword = bcryptjs.hashSync(req.body.password, 8);
     const userdata = {email: req.body.email, name: req.body.name, password: hashedPassword};
 
-    User.create(userdata, function(err, user) {
-        if(err) return handleError(res, err);
-
+    User.create(userdata).then(user => {
         const token = jwt.sign({id: user._id}, env.secret, {
             expiresIn: 86400 // expires in 24 hours
         });
@@ -66,13 +64,13 @@ router.post('/register', function(req, res) {
         message = user.name + ' registered';
         logger.info(message);
         res.status(200).json({message: message, token: token});
+    }).catch(err => {
+        handleError(res, err);
     });
 });
 
 router.get('/me', verifyToken, function(req, res) {
-    User.findById(req.userId, function(err, user) {
-        if(err) return handleError(res, err);
-
+    User.findById(req.userId).then(user => {
         if(!user) {
             message = 'User not authorized';
             logger.info(message);
@@ -80,6 +78,8 @@ router.get('/me', verifyToken, function(req, res) {
         }
 
         res.status(200).json({user: user});
+    }).catch(err => {
+        handleError(res, err);
     });
 });
 

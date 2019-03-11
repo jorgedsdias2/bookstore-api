@@ -39,7 +39,7 @@ describe('Route Auth', function() {
     context('POST /login', function() {
         it('should catch 500 error if there is one', function(done) {
             sandbox.restore();
-            sandbox.stub(mongoose.Model, 'findOne').yields(new Error('fake'));
+            sandbox.stub(mongoose.Model, 'findOne').rejects(new Error('fake'));
 
             postLogin({
                 user: {email: sampleUser.email, password: unHashedPassword},
@@ -53,7 +53,7 @@ describe('Route Auth', function() {
 
         it('should return 400 if email or password is invalid', function(done) {
             sandbox.restore();
-            sandbox.stub(mongoose.Model, 'findOne').yields(null, sampleUser);
+            sandbox.stub(mongoose.Model, 'findOne').resolves(sampleUser);
 
             postLogin({
                 user: {},
@@ -68,7 +68,7 @@ describe('Route Auth', function() {
 
         it('should return 401 unauthorized if email or password is incorrect', function(done) {
             sandbox.restore();
-            sandbox.stub(mongoose.Model, 'findOne').yields(null, sampleUser);
+            sandbox.stub(mongoose.Model, 'findOne').resolves(sampleUser);
 
             postLogin({
                 user: {email: sampleUser.email, password: 'wrong password'},
@@ -82,7 +82,7 @@ describe('Route Auth', function() {
 
         it('should login a user success', function(done) {
             sandbox.restore();
-            sandbox.stub(mongoose.Model, 'findOne').yields(null, sampleUser);
+            sandbox.stub(mongoose.Model, 'findOne').resolves(sampleUser);
 
             postLogin({
                 user: {email: sampleUser.email, password: unHashedPassword},
