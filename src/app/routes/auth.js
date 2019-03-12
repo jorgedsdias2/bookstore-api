@@ -31,7 +31,7 @@ router.post('/login', function(req, res) {
         } else {
             message = 'Authentication failed for User: ' + req.body.email;
             logger.info(message);
-            return res.status(401).json({message: message});
+            res.status(401).json({message: message});
         }
     }).catch(err => {
         handleError(res, err);
@@ -71,13 +71,15 @@ router.post('/register', function(req, res) {
 
 router.get('/me', verifyToken, function(req, res) {
     User.findById(req.userId).then(user => {
-        if(!user) {
+        if(user) {
+            message = user.name + ' is authorized';
+            logger.info(message);
+            res.status(200).json({message: message, user: user});
+        } else {
             message = 'User not authorized';
             logger.info(message);
             return res.status(401).json({message: message});
         }
-
-        res.status(200).json({user: user});
     }).catch(err => {
         handleError(res, err);
     });
