@@ -15,7 +15,7 @@ router.post('/author', verifyToken, function(req, res) {
 
     Author.create(req.body).then(author => {
         message = 'Author created - ID: ' + author.id;
-        console.log(message);
+        logger.info(message);
         res.status(200).send({message: message, author: author});
     }).catch(err => {
         handleError(res, err);
