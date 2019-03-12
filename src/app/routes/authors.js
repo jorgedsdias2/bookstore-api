@@ -34,7 +34,7 @@ router.get('/author/:id', verifyToken, function(req, res) {
         } else {
             message = 'Author not found - ID: ' + id;
             logger.info(message);
-            res.status(401).send({message: message});
+            res.status(404).send({message: message});
         }
     }).catch(err => {
         handleError(res, err);
