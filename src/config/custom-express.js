@@ -2,9 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const expressValidator = require('express-validator');
-const database = require(__root + 'src/config/database');
 const morgan = require('morgan');
-const logger = require(__root + 'src/app/services/logger');
+
+require(__root + 'src/config/database');
+require(__root + 'src/config/environment');
+const logger = require(__app + 'services/logger');
 
 module.exports = () => {
     const app = express();
@@ -35,6 +37,12 @@ module.exports = () => {
         res.status(200).json({message: 'API works.'});
     });
 
+    const auth = require(__root + 'src/app/routes/auth');
+    const authors = require(__root + 'src/app/routes/authors');
+    
+    app.use('/api/auth', auth);
+    app.use('/api/authors', authors);
+
     // 404
     app.use((req, res, next) => {
         return res.status(404).json({message: '404 - Page Not Found.'});
@@ -45,12 +53,6 @@ module.exports = () => {
         res.status = err.status || 500;
         return res.json({message: res.status + '. An unknown error has occured.'});
     });
-
-    const auth = require(__root + 'src/app/routes/auth');
-    const authors = require(__root + 'src/app/routes/authors');
-    
-    app.use('/api/auth', auth);
-    app.use('/api/authors', authors);
 
     return app;
 }

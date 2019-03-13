@@ -1,3 +1,1 @@
-module.exports = {
-    'secret': 'mysecret'
-}
+global.__secret = 'mysecret';

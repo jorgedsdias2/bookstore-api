@@ -1,4 +1,5 @@
 global.__root = __dirname + '/';
+global.__app = __root + 'src/app/';
 
 const app = require('./src/config/custom-express')();
 

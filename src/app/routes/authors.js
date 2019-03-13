@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Author = require(__root + 'src/app/db/author');
-const verifyToken = require(__root + 'src/app/auth/verify-token');
-const logger = require(__root + 'src/app/services/logger');
+const Author = require(__app + 'db/author');
+const verifyToken = require(__app + 'auth/verify-token');
+const logger = require(__app + 'services/logger');
 
 router.post('/author', verifyToken, function(req, res) {
     let message = '';

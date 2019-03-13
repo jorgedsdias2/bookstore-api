@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const User = require(__root + 'src/app/db/user');
-const verifyToken = require(__root + 'src/app/auth/verify-token');
-const logger = require(__root + 'src/app/services/logger');
+const User = require(__app + 'db/user');
+const verifyToken = require(__app + 'auth/verify-token');
+const logger = require(__app + 'services/logger');
 
 const jwt = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
-const env = require(__root + 'src/config/environment');
 
 router.post('/login', function(req, res) {
     let message;
@@ -21,7 +20,7 @@ router.post('/login', function(req, res) {
     User.findOne({email: req.body.email}).then(user => {
         const passwordIsValid = bcryptjs.compareSync(req.body.password, user.password);
         if(user && passwordIsValid) {
-            const token = jwt.sign({id: user._id}, env.secret, {
+            const token = jwt.sign({id: user._id}, __secret, {
                 expiresIn: 86400 // expires in 24 hours
             });
     
@@ -57,7 +56,7 @@ router.post('/register', function(req, res) {
     const userdata = {email: req.body.email, name: req.body.name, password: hashedPassword};
 
     User.create(userdata).then(user => {
-        const token = jwt.sign({id: user._id}, env.secret, {
+        const token = jwt.sign({id: user._id}, env.__secret, {
             expiresIn: 86400 // expires in 24 hours
         });
 
