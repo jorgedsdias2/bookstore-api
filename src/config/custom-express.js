@@ -35,6 +35,17 @@ module.exports = () => {
         res.status(200).json({message: 'API works.'});
     });
 
+    // 404
+    app.use((req, res, next) => {
+        return res.status(404).json({message: '404 - Page Not Found.'});
+    });
+
+    // 500
+    app.use((err, req, res) => {
+        res.status = err.status || 500;
+        return res.json({message: res.status + '. An unknown error has occured.'});
+    });
+
     const auth = require(__root + 'src/app/routes/auth');
     const authors = require(__root + 'src/app/routes/authors');
     
