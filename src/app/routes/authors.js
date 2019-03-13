@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+
 const Author = require(__app + 'db/author');
 const verifyToken = require(__app + 'auth/verify-token');
 const logger = require(__app + 'services/logger');

@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+
 const env = require(__root + 'src/config/environment');
 
 function verifyToken(req, res, next) {

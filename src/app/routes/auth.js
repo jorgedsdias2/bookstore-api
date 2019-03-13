@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const bcryptjs = require('bcryptjs');
+
 const User = require(__app + 'db/user');
 const verifyToken = require(__app + 'auth/verify-token');
 const logger = require(__app + 'services/logger');
-
-const jwt = require('jsonwebtoken');
-const bcryptjs = require('bcryptjs');
 
 router.post('/login', function(req, res) {
     let message;
