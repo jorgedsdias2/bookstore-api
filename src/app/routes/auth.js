@@ -6,6 +6,7 @@ const bcryptjs = require('bcryptjs');
 const User = require(__app + 'db/user');
 const verifyToken = require(__app + 'auth/verify-token');
 const logger = require(__app + 'services/logger');
+const errorUtil = require(__app + 'util/errorUtil');
 
 router.post('/login', function(req, res) {
     let message;
@@ -33,7 +34,7 @@ router.post('/login', function(req, res) {
             res.status(401).json({message: message});
         }
     }).catch(err => {
-        handleError(res, err);
+        errorUtil.handleError(res, err);
     });
 });
 
@@ -64,7 +65,7 @@ router.post('/register', function(req, res) {
         logger.info(message);
         res.status(200).json({message: message, token: token});
     }).catch(err => {
-        handleError(res, err);
+        errorUtil.handleError(res, err);
     });
 });
 
@@ -80,18 +81,8 @@ router.get('/me', verifyToken, function(req, res) {
             return res.status(401).json({message: message});
         }
     }).catch(err => {
-        handleError(res, err);
+        errorUtil.handleError(res, err);
     });
 });
-
-function handleError(res, err) {
-    if (err instanceof Error) {
-        logger.info(err.message);
-        return res.status(500).json({ error: err.message });
-    }
-
-    logger.info(err);
-    return res.status(500).json(err);
-}
 
 module.exports = router;
