@@ -4,6 +4,7 @@ const router = express.Router();
 const Author = require(__app + 'db/author');
 const verifyToken = require(__app + 'auth/verify-token');
 const logger = require(__app + 'services/logger');
+const errorUtil = require(__app + 'util/errorUtil');
 
 router.post('/author', verifyToken, function(req, res) {
     let message = '';
@@ -19,7 +20,7 @@ router.post('/author', verifyToken, function(req, res) {
         logger.info(message);
         res.status(200).send({message: message, author: author});
     }).catch(err => {
-        handleError(res, err);
+        errorUtil.handleError(res, err);
     });
 });
 
@@ -38,18 +39,8 @@ router.get('/author/:id', verifyToken, function(req, res) {
             res.status(404).send({message: message});
         }
     }).catch(err => {
-        handleError(res, err);
+        errorUtil.handleError(res, err);
     });
 });
-
-function handleError(res, err) {
-    if (err instanceof Error) {
-        logger.info(err.message);
-        return res.status(500).json({ error: err.message });
-    }
-
-    logger.info(err);
-    return res.status(500).json(err);
-}
 
 module.exports = router;
