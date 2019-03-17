@@ -8,7 +8,7 @@ const bcryptjs = require('bcryptjs');
 const mongoose = require('mongoose');
 const rewire = require('rewire');
 
-let app = rewire('../../../server');
+const app = rewire('../../../server');
 
 const sandbox = sinon.createSandbox();
 
