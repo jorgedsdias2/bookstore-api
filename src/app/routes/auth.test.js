@@ -8,28 +8,34 @@ const bcryptjs = require('bcryptjs');
 const mongoose = require('mongoose');
 const rewire = require('rewire');
 
-const app = rewire('../../../server');
+let app = rewire('../../../server');
 
 const sandbox = sinon.createSandbox();
 
 describe('Route Auth', function() {
     let sampleUser;
+    let findStub;
+    let createStub;
     const unHashedPassword = '123456';
     const hashedPassword = bcryptjs.hashSync(unHashedPassword, 8);
 
-    let postLogin = function(params, callbak) {
-        request(app).post('/api/auth/login')
+    let postApp = function(params, callbak) {
+        request(app).post(params.url)
         .send(params.user)
         .expect(params.status)
         .end(callbak);
-    }    
+    }
 
     beforeEach(function() {
         sampleUser = {
-            email: 'admin@bookstore.com.br',
+            email: 'admin-test@bookstore.com.br',
             name: 'Admin',
             password: hashedPassword
         };
+
+        sandbox.restore();
+        findStub = sandbox.stub(mongoose.Model, 'findOne').resolves(sampleUser);
+        createStub = sandbox.stub(mongoose.Model, 'create').resolves(sampleUser);
     });
 
     afterEach(function() {
@@ -39,23 +45,23 @@ describe('Route Auth', function() {
     context('POST /login', function() {
         it('should catch 500 error if there is one', function(done) {
             sandbox.restore();
-            sandbox.stub(mongoose.Model, 'findOne').rejects(new Error('fake'));
+            let stub = sandbox.stub(mongoose.Model, 'findOne').rejects(new Error('fake'));
 
-            postLogin({
+            postApp({
+                url: '/api/auth/login',
                 user: {email: sampleUser.email, password: unHashedPassword},
                 status: 500
             }, function(err, result) {
                 expect(err).to.not.exist;
+                expect(stub).to.have.been.calledOnce;
                 expect(result.body).to.have.property('error').to.equal('fake');
                 done();
             });
         });
 
         it('should return 400 if email or password is invalid', function(done) {
-            sandbox.restore();
-            sandbox.stub(mongoose.Model, 'findOne').resolves(sampleUser);
-
-            postLogin({
+            postApp({
+                url: '/api/auth/login',
                 user: {},
                 status: 400
             }, function(err, result) {
@@ -67,10 +73,8 @@ describe('Route Auth', function() {
         });
 
         it('should return 401 unauthorized if email or password is incorrect', function(done) {
-            sandbox.restore();
-            sandbox.stub(mongoose.Model, 'findOne').resolves(sampleUser);
-
-            postLogin({
+            postApp({
+                url: '/api/auth/login',
                 user: {email: sampleUser.email, password: 'wrong password'},
                 status: 401
             }, function(err, result) {
@@ -81,14 +85,13 @@ describe('Route Auth', function() {
         });
 
         it('should login a user success', function(done) {
-            sandbox.restore();
-            sandbox.stub(mongoose.Model, 'findOne').resolves(sampleUser);
-
-            postLogin({
+            postApp({
+                url: '/api/auth/login',
                 user: {email: sampleUser.email, password: unHashedPassword},
                 status: 200
             }, function(err, result) {
                 expect(err).to.not.exist;
+                expect(findStub).to.have.been.calledOnce;
                 expect(result.body).to.have.property('message').to.equal('User ' + sampleUser.name + ' is authenticated');
                 done();
             });
@@ -102,6 +105,51 @@ describe('Route Auth', function() {
             .end(function(err, result) {
                 expect(err).to.not.exist;
                 expect(result.body).to.have.property('token').null;
+                done();
+            });
+        });
+    });
+
+    context('POST /register', function() {
+        it('should catch 500 error if there is one', function(done) {
+            sandbox.restore();
+            let stub = sandbox.stub(mongoose.Model, 'create').rejects(new Error('fake'));
+
+            postApp({
+                url: '/api/auth/register',
+                user: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
+                status: 500
+            }, function(err, result) {
+                expect(err).to.not.exist;
+                expect(stub).to.have.been.calledOnce;
+                expect(result.body).to.have.property('error').to.equal('fake');
+                done();
+            });
+        });
+
+        it('should return 400 if email, name or password is invalid', function(done) {
+            postApp({
+                url: '/api/auth/register',
+                user: {},
+                status: 400
+            }, function(err, result) {
+                expect(err).to.not.exist;
+                expect(result.body).to.have.nested.property('email.msg').to.equal('Email can not be empty or invalid');
+                expect(result.body).to.have.nested.property('name.msg').to.equal('Name can not be empty');
+                expect(result.body).to.have.nested.property('password.msg').to.equal('Password can not be empty');
+                done();
+            });
+        });
+
+        it('should user registered', function(done) {
+            postApp({
+                url: '/api/auth/register',
+                user: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
+                status: 200
+            }, function(err, result) {
+                expect(err).to.not.exist;
+                expect(createStub).to.have.been.calledOnce;
+                expect(result.body).to.have.property('message').to.equal(sampleUser.name + ' registered');
                 done();
             });
         });

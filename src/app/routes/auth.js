@@ -30,7 +30,7 @@ router.post('/login', function(req, res) {
             res.status(200).json({message: message, token: token});
         } else {
             message = 'Authentication failed for User: ' + req.body.email;
-            logger.info(message);
+            logger.error(message);
             res.status(401).json({message: message});
         }
     }).catch(err => {
@@ -57,7 +57,7 @@ router.post('/register', function(req, res) {
     const userdata = {email: req.body.email, name: req.body.name, password: hashedPassword};
 
     User.create(userdata).then(user => {
-        const token = jwt.sign({id: user._id}, env.__secret, {
+        const token = jwt.sign({id: user._id}, __secret, {
             expiresIn: 86400 // expires in 24 hours
         });
 
@@ -77,7 +77,7 @@ router.get('/me', verifyToken, function(req, res) {
             res.status(200).json({message: message, user: user});
         } else {
             message = 'User not authorized';
-            logger.info(message);
+            logger.error(message);
             return res.status(401).json({message: message});
         }
     }).catch(err => {

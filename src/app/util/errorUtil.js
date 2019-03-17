@@ -3,11 +3,11 @@ const logger = require(__app + 'services/logger');
 class ErrorUtil {
     handleError(res, err) {
         if (err instanceof Error) {
-            logger.info(err.message);
+            logger.error(err.message);
             return res.status(500).json({ error: err.message });
         }
     
-        logger.info(err);
+        logger.error(err);
         return res.status(500).json(err);
     }
 }
