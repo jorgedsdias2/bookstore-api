@@ -6,6 +6,14 @@ const verifyToken = require(__app + 'auth/verify-token');
 const logger = require(__app + 'services/logger');
 const errorUtil = require(__app + 'util/errorUtil');
 
+router.get('/', verifyToken, function(req, res) {
+    Author.find({}).then(authors => {
+        res.status(200).send({authors: authors});
+    }).catch(err => {
+        errorUtil.handleError(res, err);
+    });
+});
+
 router.post('/author', verifyToken, function(req, res) {
     let message = '';
 

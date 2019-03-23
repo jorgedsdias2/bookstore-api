@@ -26,21 +26,25 @@ GET     /auth/logout
 POST    /auth/register
 GET     /auth/me
 
+GET     /authors
 POST	/authors/author
 GET		/authors/author/:id
 PUT		/authors/author/:id
 DELETE	/authors/author/:id
 
+GET     /books
 POST	/books/book
 GET		/books/book/:id
 PUT		/books/book/:id
 DELETE	/books/book/:id
 
+GET     /categories
 POST	/categories/category
 GET		/categories/category/:id
 PUT		/categories/category/:id
 DELETE	/categories/category/:id
 
+GET     /users
 POST	/users/user
 GET		/users/user/:id
 PUT		/users/user/:id

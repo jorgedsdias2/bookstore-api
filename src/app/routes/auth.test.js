@@ -21,7 +21,7 @@ describe('Route Auth', function() {
 
     let postApp = function(params, callbak) {
         request(app).post(params.url)
-        .send(params.user)
+        .send(params.data)
         .expect(params.status)
         .end(callbak);
     }
@@ -45,15 +45,15 @@ describe('Route Auth', function() {
     context('POST /login', function() {
         it('should catch 500 error if there is one', function(done) {
             sandbox.restore();
-            let stub = sandbox.stub(mongoose.Model, 'findOne').rejects(new Error('fake'));
+            findStub = sandbox.stub(mongoose.Model, 'findOne').rejects(new Error('fake'));
 
             postApp({
                 url: '/api/auth/login',
-                user: {email: sampleUser.email, password: unHashedPassword},
+                data: {email: sampleUser.email, password: unHashedPassword},
                 status: 500
             }, function(err, result) {
                 expect(err).to.not.exist;
-                expect(stub).to.have.been.calledOnce;
+                expect(findStub).to.have.been.calledOnce;
                 expect(result.body).to.have.property('error').to.equal('fake');
                 done();
             });
@@ -62,7 +62,7 @@ describe('Route Auth', function() {
         it('should return 400 if email or password is invalid', function(done) {
             postApp({
                 url: '/api/auth/login',
-                user: {},
+                data: {},
                 status: 400
             }, function(err, result) {
                 expect(err).to.not.exist;
@@ -75,7 +75,7 @@ describe('Route Auth', function() {
         it('should return 401 unauthorized if email or password is incorrect', function(done) {
             postApp({
                 url: '/api/auth/login',
-                user: {email: sampleUser.email, password: 'wrong password'},
+                data: {email: sampleUser.email, password: 'wrong password'},
                 status: 401
             }, function(err, result) {
                 expect(err).to.not.exist;
@@ -87,7 +87,7 @@ describe('Route Auth', function() {
         it('should login a user success', function(done) {
             postApp({
                 url: '/api/auth/login',
-                user: {email: sampleUser.email, password: unHashedPassword},
+                data: {email: sampleUser.email, password: unHashedPassword},
                 status: 200
             }, function(err, result) {
                 expect(err).to.not.exist;
@@ -113,15 +113,15 @@ describe('Route Auth', function() {
     context('POST /register', function() {
         it('should catch 500 error if there is one', function(done) {
             sandbox.restore();
-            let stub = sandbox.stub(mongoose.Model, 'create').rejects(new Error('fake'));
+            findStub = sandbox.stub(mongoose.Model, 'create').rejects(new Error('fake'));
 
             postApp({
                 url: '/api/auth/register',
-                user: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
+                data: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
                 status: 500
             }, function(err, result) {
                 expect(err).to.not.exist;
-                expect(stub).to.have.been.calledOnce;
+                expect(findStub).to.have.been.calledOnce;
                 expect(result.body).to.have.property('error').to.equal('fake');
                 done();
             });
@@ -130,7 +130,7 @@ describe('Route Auth', function() {
         it('should return 400 if email, name or password is invalid', function(done) {
             postApp({
                 url: '/api/auth/register',
-                user: {},
+                data: {},
                 status: 400
             }, function(err, result) {
                 expect(err).to.not.exist;
@@ -144,7 +144,7 @@ describe('Route Auth', function() {
         it('should user registered', function(done) {
             postApp({
                 url: '/api/auth/register',
-                user: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
+                data: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
                 status: 200
             }, function(err, result) {
                 expect(err).to.not.exist;
