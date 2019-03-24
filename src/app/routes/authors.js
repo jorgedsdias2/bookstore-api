@@ -68,6 +68,8 @@ router.get('/author/:id', verifyToken, function(req, res) {
     
     Author.findById(id).then(author => {
         if(author) {
+            console.log(id);
+            console.log(author);
             message = 'Author found - ID: ' + author.id;
             logger.info(message);
             res.status(200).send({message: message, author: author});

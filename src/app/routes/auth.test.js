@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const rewire = require('rewire');
 
 const app = rewire('../../../server');
+const restUtil = require('../util/restUtil')(app);
 
 const sandbox = sinon.createSandbox();
 
@@ -18,13 +19,6 @@ describe('Route Auth', function() {
     let createStub;
     const unHashedPassword = '123456';
     const hashedPassword = bcryptjs.hashSync(unHashedPassword, 8);
-
-    let postApp = function(params, callbak) {
-        request(app).post(params.url)
-        .send(params.data)
-        .expect(params.status)
-        .end(callbak);
-    }
 
     beforeEach(function() {
         sampleUser = {
@@ -47,7 +41,7 @@ describe('Route Auth', function() {
             sandbox.restore();
             findStub = sandbox.stub(mongoose.Model, 'findOne').rejects(new Error('fake'));
 
-            postApp({
+            restUtil.postApp({
                 url: '/api/auth/login',
                 data: {email: sampleUser.email, password: unHashedPassword},
                 status: 500
@@ -60,7 +54,7 @@ describe('Route Auth', function() {
         });
 
         it('should return 400 if email or password is invalid', function(done) {
-            postApp({
+            restUtil.postApp({
                 url: '/api/auth/login',
                 data: {},
                 status: 400
@@ -73,7 +67,7 @@ describe('Route Auth', function() {
         });
 
         it('should return 401 unauthorized if email or password is incorrect', function(done) {
-            postApp({
+            restUtil.postApp({
                 url: '/api/auth/login',
                 data: {email: sampleUser.email, password: 'wrong password'},
                 status: 401
@@ -85,7 +79,7 @@ describe('Route Auth', function() {
         });
 
         it('should login a user success', function(done) {
-            postApp({
+            restUtil.postApp({
                 url: '/api/auth/login',
                 data: {email: sampleUser.email, password: unHashedPassword},
                 status: 200
@@ -100,9 +94,10 @@ describe('Route Auth', function() {
 
     context('GET /logout', function() {
         it('should logout user and return token null', function(done) {
-            request(app).get('/api/auth/logout')
-            .expect(200)
-            .end(function(err, result) {
+            restUtil.getApp({
+                url: '/api/auth/logout',
+                status: 200
+            }, function(err, result) {
                 expect(err).to.not.exist;
                 expect(result.body).to.have.property('token').null;
                 done();
@@ -115,7 +110,7 @@ describe('Route Auth', function() {
             sandbox.restore();
             findStub = sandbox.stub(mongoose.Model, 'create').rejects(new Error('fake'));
 
-            postApp({
+            restUtil.postApp({
                 url: '/api/auth/register',
                 data: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
                 status: 500
@@ -128,7 +123,7 @@ describe('Route Auth', function() {
         });
 
         it('should return 400 if email, name or password is invalid', function(done) {
-            postApp({
+            restUtil.postApp({
                 url: '/api/auth/register',
                 data: {},
                 status: 400
@@ -142,7 +137,7 @@ describe('Route Auth', function() {
         });
 
         it('should user registered', function(done) {
-            postApp({
+            restUtil.postApp({
                 url: '/api/auth/register',
                 data: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
                 status: 200
