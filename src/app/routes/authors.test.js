@@ -18,7 +18,6 @@ describe('Route Author', function() {
     let listAuthors;
     let findStub;
     let jwtStub;
-    let err;
 
     let getApp = function(params, callbak) {
         request(app).get(params.url)
@@ -46,7 +45,6 @@ describe('Route Author', function() {
         ];
 
         sandbox.restore();
-        err = sandbox.spy();
         findStub = sandbox.stub(mongoose.Model, 'find').resolves(listAuthors);
         jwtStub = sandbox.stub(jwt, 'verify').callsArgWith(2, false, {});
     });
