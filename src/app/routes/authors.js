@@ -71,7 +71,6 @@ router.get('/author/:id', verifyToken, function(req, res) {
         logger.info(message);
         res.status(200).send({message: message, author: author});
     }).catch(err => {
-        console.log(err);
         errorUtil.handleError(res, err);
     });
 });
