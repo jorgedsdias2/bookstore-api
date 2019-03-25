@@ -5,7 +5,7 @@ class RestUtil {
         this._app = app;
     }
 
-    getApp(params, callbak) {
+    get(params, callbak) {
         if(!params.token) params.token = '';
         request(this._app).get(params.url)
         .send(params.data)
@@ -14,7 +14,7 @@ class RestUtil {
         .end(callbak);
     }
     
-    postApp(params, callbak) {
+    post(params, callbak) {
         if(!params.token) params.token = '';
         request(this._app).post(params.url)
         .send(params.data)
@@ -23,7 +23,7 @@ class RestUtil {
         .end(callbak);
     }
     
-    putApp(params, callbak) {
+    put(params, callbak) {
         if(!params.token) params.token = '';
         request(this._app).put(params.url)
         .send(params.data)
@@ -32,7 +32,7 @@ class RestUtil {
         .end(callbak);
     }
     
-    deleteApp(params, callbak) {
+    delete(params, callbak) {
         if(!params.token) params.token = '';
         request(this._app).delete(params.url)
         .set('x-access-token', params.token)

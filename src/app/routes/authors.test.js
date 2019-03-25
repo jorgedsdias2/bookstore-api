@@ -48,7 +48,7 @@ describe('Route Author', function() {
     
     context('POST /', function() {
         it('should return a list of authors', function(done) {
-            restUtil.getApp({
+            restUtil.get({
                 url: '/api/authors',
                 data: {},
                 status: 200,
@@ -66,7 +66,7 @@ describe('Route Author', function() {
     
     context('POST /author', function() {
         it('should return 400 if name is invalid', function(done) {
-            restUtil.postApp({
+            restUtil.post({
                 url: '/api/authors/author',
                 data: {},
                 status: 400,
@@ -80,7 +80,7 @@ describe('Route Author', function() {
         });
         
         it('should save an author', function(done) {
-            restUtil.postApp({
+            restUtil.post({
                 url: '/api/authors/author',
                 data: {name: anyAuthor.name},
                 status: 200,
@@ -97,7 +97,7 @@ describe('Route Author', function() {
 
     context('PUT /author/:id', function() {
         it('should return 400 if name is invalid', function(done) {
-            restUtil.putApp({
+            restUtil.put({
                 url: '/api/authors/author/' + anyAuthor.id,
                 data: {},
                 status: 400,
@@ -111,7 +111,7 @@ describe('Route Author', function() {
         });
 
         it('should update an author', function(done) {
-            restUtil.putApp({
+            restUtil.put({
                 url: '/api/authors/author/' + anyAuthor.id,
                 data: {name: anyAuthor.name},
                 status: 200,
@@ -128,7 +128,7 @@ describe('Route Author', function() {
 
     context('DELETE /author/:id', function() {
         it('should remove an author', function(done) {
-            restUtil.deleteApp({
+            restUtil.delete({
                 url: '/api/authors/author/' + anyAuthor.id,
                 status: 200,
                 token: 'any-token'
@@ -142,36 +142,20 @@ describe('Route Author', function() {
         });
     });
 
-    // context('GET /author/:id', function() {
-    //     it('should return 404 if author is not found', function(done) {
-    //         findByIdStub = sandbox.stub(mongoose.Model, 'findById').yields(null, anyAuthor);
-
-    //         restUtil.getApp({
-    //             url: '/api/authors/author/' + {},
-    //             status: 404,
-    //             token: 'any-token'
-    //         }, function(err, result) {
-    //             expect(err).to.not.exist;
-    //             expect(jwtStub).to.have.been.calledOnce;
-    //             expect(findByIdStub).to.have.been.calledOnce;
-    //             expect(result.body).to.have.property('message').to.equal('Author not found - ID: ' + {});
-    //             done();
-    //         });
-    //     });
-
-    //     it('should return an author', function(done) {
-    //         restUtil.getApp({
-    //             url: '/api/authors/author/' + anyAuthor.id,
-    //             status: 200,
-    //             token: 'any-token'
-    //         }, function(err, result) {
-    //             expect(err).to.not.exist;
-    //             expect(jwtStub).to.have.been.calledOnce;
-    //             expect(findByIdStub).to.have.been.calledOnce;
-    //             expect(result.body).to.have.property('message').to.equal('Author found - ID: ' + anyAuthor.id);
-    //             //expect(result.body).to.have.property('author').to.equal(anyAuthor);
-    //             done();
-    //         });
-    //     });
-    // });
+    context('GET /author/:id', function() {
+        it('should return an author', function(done) {
+            restUtil.get({
+                url: '/api/authors/author/' + anyAuthor.id,
+                status: 200,
+                token: 'any-token'
+            }, function(err, result) {
+                expect(err).to.not.exist;
+                expect(jwtStub).to.have.been.calledOnce;
+                expect(findByIdStub).to.have.been.calledOnce;
+                expect(result.body).to.have.property('message').to.equal('Author found - ID: ' + anyAuthor.id);
+                expect(result.body).to.have.property('author').to.deep.include(anyAuthor);
+                done();
+            });
+        });
+    });
 });
