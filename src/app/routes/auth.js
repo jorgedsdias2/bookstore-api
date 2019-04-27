@@ -19,7 +19,7 @@ router.post('/login', function(req, res) {
     if(validationErrors) return res.status(400).json(validationErrors);
 
     User.findOne({email: req.body.email}).then(user => {
-        const passwordIsValid = bcryptjs.compareSync(req.body.password, user.password);
+        const passwordIsValid = (user ? bcryptjs.compareSync(req.body.password, user.password): false);
         if(user && passwordIsValid) {
             const token = jwt.sign({id: user._id}, __secret, {
                 expiresIn: 86400 // expires in 24 hours
