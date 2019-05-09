@@ -1,0 +1,3 @@
+mongodb+srv://root:<password>@teste-usfrr.mongodb.net/test?retryWrites=true
+
+mongodb://root:<password>@teste-shard-00-00-usfrr.mongodb.net:27017,teste-shard-00-01-usfrr.mongodb.net:27017,teste-shard-00-02-usfrr.mongodb.net:27017/test?ssl=true&replicaSet=teste-shard-0&authSource=admin&retryWrites=true

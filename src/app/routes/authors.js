@@ -24,7 +24,7 @@ router.post('/author', verifyToken, function(req, res) {
     if(validationErrors) return res.status(400).send(validationErrors);
 
     Author.create(req.body).then(author => {
-        message = 'Author created - ID: ' + author.id;
+        message = author.name + ' as created';
         logger.info(message);
         res.status(200).send({message: message, author: author});
     }).catch(err => {
@@ -42,7 +42,7 @@ router.put('/author/:id', verifyToken, function(req, res) {
     if(validationErrors) return res.status(400).send(validationErrors);
 
     Author.findByIdAndUpdate(req.params.id, req.body).then(author => {
-        message = 'Author updated - ID: ' + author.id;
+        message = author.name + ' as updated';
         logger.info(message);
         res.status(200).send({message: message, author: author});
     }).catch(err => {
@@ -67,7 +67,7 @@ router.get('/author/:id', verifyToken, function(req, res) {
     const id = req.params.id;
     
     Author.findById(id).then(author => {
-        message = 'Author found - ID: ' + author.id;
+        message = author.name + ' as found';
         logger.info(message);
         res.status(200).send({message: message, author: author});
     }).catch(err => {
