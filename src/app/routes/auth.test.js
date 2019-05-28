@@ -48,7 +48,7 @@ describe('Route Auth', function() {
             }, function(err, result) {
                 expect(err).to.not.exist;
                 expect(findStub).to.have.been.calledOnce;
-                expect(result.body).to.have.property('error').to.equal('fake');
+                expect(result.body).to.have.property('message').to.equal('fake');
                 done();
             });
         });
@@ -60,8 +60,8 @@ describe('Route Auth', function() {
                 status: 400
             }, function(err, result) {
                 expect(err).to.not.exist;
-                expect(result.body).to.have.nested.property('email.msg').to.equal('Email can not be empty or invalid');
-                expect(result.body).to.have.nested.property('password.msg').to.equal('Password can not be empty');
+                expect(result.body.error).to.have.nested.property('email.msg').to.equal('Email can not be empty or invalid');
+                expect(result.body.error).to.have.nested.property('password.msg').to.equal('Password can not be empty');
                 done();
             });
         });
@@ -117,7 +117,7 @@ describe('Route Auth', function() {
             }, function(err, result) {
                 expect(err).to.not.exist;
                 expect(findStub).to.have.been.calledOnce;
-                expect(result.body).to.have.property('error').to.equal('fake');
+                expect(result.body).to.have.property('message').to.equal('fake');
                 done();
             });
         });
@@ -129,9 +129,9 @@ describe('Route Auth', function() {
                 status: 400
             }, function(err, result) {
                 expect(err).to.not.exist;
-                expect(result.body).to.have.nested.property('email.msg').to.equal('Email can not be empty or invalid');
-                expect(result.body).to.have.nested.property('name.msg').to.equal('Name can not be empty');
-                expect(result.body).to.have.nested.property('password.msg').to.equal('Password can not be empty');
+                expect(result.body.error).to.have.nested.property('email.msg').to.equal('Email can not be empty or invalid');
+                expect(result.body.error).to.have.nested.property('name.msg').to.equal('Name can not be empty');
+                expect(result.body.error).to.have.nested.property('password.msg').to.equal('Password can not be empty');
                 done();
             });
         });

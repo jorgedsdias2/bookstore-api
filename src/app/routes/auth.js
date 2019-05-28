@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
 
 const User = require(__app + 'db/user');
 const verifyToken = require(__app + 'auth/verify-token');
 const logger = require(__app + 'services/logger');
 const errorUtil = require(__app + 'util/errorUtil');
+const authUtil = require(__app + 'util/authUtil');
 
 router.post('/login', function(req, res) {
     let message;
@@ -16,14 +16,12 @@ router.post('/login', function(req, res) {
 
     const validationErrors = req.validationErrors(true);
 
-    if(validationErrors) return res.status(400).json(validationErrors);
+    if(validationErrors) return errorUtil.handleValidationErrors(res, validationErrors);
 
     User.findOne({email: req.body.email}).then(user => {
         const passwordIsValid = (user ? bcryptjs.compareSync(req.body.password, user.password): false);
         if(user && passwordIsValid) {
-            const token = jwt.sign({id: user._id}, __secret, {
-                expiresIn: 86400 // expires in 24 hours
-            });
+            const token = authUtil.generateToken(user);
     
             message = 'User ' + user.name + ' is authenticated';
             logger.info(message);
@@ -51,15 +49,13 @@ router.post('/register', function(req, res) {
 
     const validationErrors = req.validationErrors(true);
 
-    if(validationErrors) return res.status(400).json(validationErrors);
+    if(validationErrors) return errorUtil.handleValidationErrors(res, validationErrors);
     
     const hashedPassword = bcryptjs.hashSync(req.body.password, 8);
     const userdata = {email: req.body.email, name: req.body.name, password: hashedPassword};
 
     User.create(userdata).then(user => {
-        const token = jwt.sign({id: user._id}, __secret, {
-            expiresIn: 86400 // expires in 24 hours
-        });
+        const token = authUtil.generateToken(user);
 
         message = user.name + ' registered';
         logger.info(message);

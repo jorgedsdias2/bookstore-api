@@ -21,7 +21,7 @@ router.post('/author', verifyToken, function(req, res) {
 
     const validationErrors = req.validationErrors(true);
 
-    if(validationErrors) return res.status(400).send(validationErrors);
+    if(validationErrors) return errorUtil.handleValidationErrors(res, validationErrors);
 
     Author.create(req.body).then(author => {
         message = author.name + ' as created';
@@ -39,7 +39,7 @@ router.put('/author/:id', verifyToken, function(req, res) {
 
     const validationErrors = req.validationErrors(true);
 
-    if(validationErrors) return res.status(400).send(validationErrors);
+    if(validationErrors) return errorUtil.handleValidationErrors(res, validationErrors);
 
     Author.findByIdAndUpdate(req.params.id, req.body).then(author => {
         message = author.name + ' as updated';

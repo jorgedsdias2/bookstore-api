@@ -74,7 +74,7 @@ describe('Route Author', function() {
             }, function(err, result) {
                 expect(err).to.not.exist;
                 expect(jwtStub).to.have.been.calledOnce;
-                expect(result.body).to.have.nested.property('name.msg').to.equal('Name can not be empty');
+                expect(result.body.error).to.have.nested.property('name.msg').to.equal('Name can not be empty');
                 done();
             });
         });
@@ -89,7 +89,7 @@ describe('Route Author', function() {
                 expect(err).to.not.exist;
                 expect(jwtStub).to.have.been.calledOnce;
                 expect(createStub).to.have.been.calledOnce;
-                expect(result.body).to.have.property('message').to.equal('Author created - ID: ' + result.body.author.id);
+                expect(result.body).to.have.property('message').to.equal(result.body.author.name + ' as created');
                 done();
             });
         });
@@ -105,7 +105,7 @@ describe('Route Author', function() {
             }, function(err, result) {
                 expect(err).to.not.exist;
                 expect(jwtStub).to.have.been.calledOnce;
-                expect(result.body).to.have.nested.property('name.msg').to.equal('Name can not be empty');
+                expect(result.body.error).to.have.nested.property('name.msg').to.equal('Name can not be empty');
                 done();
             });
         });
@@ -120,7 +120,7 @@ describe('Route Author', function() {
                 expect(err).to.not.exist;
                 expect(jwtStub).to.have.been.calledOnce;
                 expect(findUpdateStub).to.have.been.calledOnce;
-                expect(result.body).to.have.property('message').to.equal('Author updated - ID: ' + result.body.author.id);
+                expect(result.body).to.have.property('message').to.equal(result.body.author.name +  ' as updated');
                 done();
             });
         });
@@ -152,7 +152,7 @@ describe('Route Author', function() {
                 expect(err).to.not.exist;
                 expect(jwtStub).to.have.been.calledOnce;
                 expect(findByIdStub).to.have.been.calledOnce;
-                expect(result.body).to.have.property('message').to.equal('Author found - ID: ' + anyAuthor.id);
+                expect(result.body).to.have.property('message').to.equal(anyAuthor.name + ' as found');
                 expect(result.body).to.have.property('author').to.deep.include(anyAuthor);
                 done();
             });
