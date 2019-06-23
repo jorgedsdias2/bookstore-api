@@ -1,6 +1,6 @@
 const request = require('supertest');
 
-class RestUtil {
+class RestHelper {
     constructor(app) {
         this._app = app;
     }
@@ -42,5 +42,5 @@ class RestUtil {
 }
 
 module.exports = function(app) {
-    return new RestUtil(app);
+    return new RestHelper(app);
 }

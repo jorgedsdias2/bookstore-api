@@ -1,6 +1,5 @@
 const chai = require('chai');
 const expect = chai.expect;
-const request = require("supertest");
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 chai.use(sinonChai);
@@ -9,7 +8,7 @@ const rewire = require('rewire');
 const jwt = require('jsonwebtoken');
 
 const app = rewire('../../../server');
-const restUtil = require('../util/restUtil')(app);
+const restHelper = require('../helpers/RestHelper')(app);
 
 const sandbox = sinon.createSandbox();
 
@@ -48,7 +47,7 @@ describe('Route Author', function() {
     
     context('POST /', function() {
         it('should return a list of authors', function(done) {
-            restUtil.get({
+            restHelper.get({
                 url: '/api/authors',
                 data: {},
                 status: 200,
@@ -66,7 +65,7 @@ describe('Route Author', function() {
     
     context('POST /author', function() {
         it('should return 400 if name is invalid', function(done) {
-            restUtil.post({
+            restHelper.post({
                 url: '/api/authors/author',
                 data: {},
                 status: 400,
@@ -80,7 +79,7 @@ describe('Route Author', function() {
         });
         
         it('should save an author', function(done) {
-            restUtil.post({
+            restHelper.post({
                 url: '/api/authors/author',
                 data: {name: anyAuthor.name},
                 status: 200,
@@ -97,7 +96,7 @@ describe('Route Author', function() {
 
     context('PUT /author/:id', function() {
         it('should return 400 if name is invalid', function(done) {
-            restUtil.put({
+            restHelper.put({
                 url: '/api/authors/author/' + anyAuthor.id,
                 data: {},
                 status: 400,
@@ -111,7 +110,7 @@ describe('Route Author', function() {
         });
 
         it('should update an author', function(done) {
-            restUtil.put({
+            restHelper.put({
                 url: '/api/authors/author/' + anyAuthor.id,
                 data: {name: anyAuthor.name},
                 status: 200,
@@ -128,7 +127,7 @@ describe('Route Author', function() {
 
     context('DELETE /author/:id', function() {
         it('should remove an author', function(done) {
-            restUtil.delete({
+            restHelper.delete({
                 url: '/api/authors/author/' + anyAuthor.id,
                 status: 200,
                 token: 'any-token'
@@ -144,7 +143,7 @@ describe('Route Author', function() {
 
     context('GET /author/:id', function() {
         it('should return an author', function(done) {
-            restUtil.get({
+            restHelper.get({
                 url: '/api/authors/author/' + anyAuthor.id,
                 status: 200,
                 token: 'any-token'

@@ -1,6 +1,5 @@
 const chai = require('chai');
 const expect = chai.expect;
-const request = require("supertest");
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 chai.use(sinonChai);
@@ -9,7 +8,7 @@ const mongoose = require('mongoose');
 const rewire = require('rewire');
 
 const app = rewire('../../../server');
-const restUtil = require('../util/restUtil')(app);
+const restHelper = require('../helpers/RestHelper')(app);
 
 const sandbox = sinon.createSandbox();
 
@@ -41,7 +40,7 @@ describe('Route Auth', function() {
             sandbox.restore();
             findStub = sandbox.stub(mongoose.Model, 'findOne').rejects(new Error('fake'));
 
-            restUtil.post({
+            restHelper.post({
                 url: '/api/auth/login',
                 data: {email: sampleUser.email, password: unHashedPassword},
                 status: 500
@@ -54,7 +53,7 @@ describe('Route Auth', function() {
         });
 
         it('should return 400 if email or password is invalid', function(done) {
-            restUtil.post({
+            restHelper.post({
                 url: '/api/auth/login',
                 data: {},
                 status: 400
@@ -67,7 +66,7 @@ describe('Route Auth', function() {
         });
 
         it('should return 401 unauthorized if email or password is incorrect', function(done) {
-            restUtil.post({
+            restHelper.post({
                 url: '/api/auth/login',
                 data: {email: sampleUser.email, password: 'wrong password'},
                 status: 401
@@ -79,7 +78,7 @@ describe('Route Auth', function() {
         });
 
         it('should login a user success', function(done) {
-            restUtil.post({
+            restHelper.post({
                 url: '/api/auth/login',
                 data: {email: sampleUser.email, password: unHashedPassword},
                 status: 200
@@ -94,7 +93,7 @@ describe('Route Auth', function() {
 
     context('GET /logout', function() {
         it('should logout user and return token null', function(done) {
-            restUtil.get({
+            restHelper.get({
                 url: '/api/auth/logout',
                 status: 200
             }, function(err, result) {
@@ -110,7 +109,7 @@ describe('Route Auth', function() {
             sandbox.restore();
             findStub = sandbox.stub(mongoose.Model, 'create').rejects(new Error('fake'));
 
-            restUtil.post({
+            restHelper.post({
                 url: '/api/auth/register',
                 data: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
                 status: 500
@@ -123,7 +122,7 @@ describe('Route Auth', function() {
         });
 
         it('should return 400 if email, name or password is invalid', function(done) {
-            restUtil.post({
+            restHelper.post({
                 url: '/api/auth/register',
                 data: {},
                 status: 400
@@ -137,7 +136,7 @@ describe('Route Auth', function() {
         });
 
         it('should user registered', function(done) {
-            restUtil.post({
+            restHelper.post({
                 url: '/api/auth/register',
                 data: {email: sampleUser.email, name: sampleUser.name, password: unHashedPassword},
                 status: 200

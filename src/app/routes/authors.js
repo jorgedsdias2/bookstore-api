@@ -1,56 +1,56 @@
 const express = require('express');
 const router = express.Router();
 
-const Author = require(__app + 'db/author');
-const verifyToken = require(__app + 'auth/verify-token');
-const logger = require(__app + 'services/logger');
-const errorUtil = require(__app + 'util/errorUtil');
+const Author = require('../db/author');
+const logger = require('../services/logger');
+const authHelper = require('../helpers/AuthHelper');
+const errorHelper = require('../helpers/ErrorHelper');
 
-router.get('/', verifyToken, function(req, res) {
+router.get('/', authHelper.verifyToken, function(req, res) {
     Author.find({}).then(authors => {
         res.status(200).send({authors: authors});
     }).catch(err => {
-        errorUtil.handleError(res, err);
+        errorHelper.error(res, err);
     });
 });
 
-router.post('/author', verifyToken, function(req, res) {
+router.post('/author', authHelper.verifyToken, function(req, res) {
     let message = '';
 
     req.assert('name', 'Name can not be empty').notEmpty();
 
     const validationErrors = req.validationErrors(true);
 
-    if(validationErrors) return errorUtil.handleValidationErrors(res, validationErrors);
+    if(validationErrors) return errorHelper.validations(res, validationErrors);
 
     Author.create(req.body).then(author => {
         message = author.name + ' as created';
         logger.info(message);
         res.status(200).send({message: message, author: author});
     }).catch(err => {
-        errorUtil.handleError(res, err);
+        errorHelper.error(res, err);
     });
 });
 
-router.put('/author/:id', verifyToken, function(req, res) {
+router.put('/author/:id', authHelper.verifyToken, function(req, res) {
     let message = '';
 
     req.assert('name', 'Name can not be empty').notEmpty();
 
     const validationErrors = req.validationErrors(true);
 
-    if(validationErrors) return errorUtil.handleValidationErrors(res, validationErrors);
+    if(validationErrors) return errorHelper.validations(res, validationErrors);
 
     Author.findByIdAndUpdate(req.params.id, req.body).then(author => {
         message = author.name + ' as updated';
         logger.info(message);
         res.status(200).send({message: message, author: author});
     }).catch(err => {
-        errorUtil.handleError(res, err);
+        errorHelper.error(res, err);
     });
 });
 
-router.delete('/author/:id', verifyToken, function(req, res) {
+router.delete('/author/:id', authHelper.verifyToken, function(req, res) {
     let message = '';
 
     Author.findByIdAndRemove(req.params.id).then(author => {
@@ -58,11 +58,11 @@ router.delete('/author/:id', verifyToken, function(req, res) {
         logger.info(message);
         res.status(200).send({message: message});
     }).catch(err => {
-        errorUtil.handleError(res, err);
+        errorHelper.error(res, err);
     });
 });
 
-router.get('/author/:id', verifyToken, function(req, res) {
+router.get('/author/:id', authHelper.verifyToken, function(req, res) {
     let message = '';
     const id = req.params.id;
     
@@ -71,7 +71,7 @@ router.get('/author/:id', verifyToken, function(req, res) {
         logger.info(message);
         res.status(200).send({message: message, author: author});
     }).catch(err => {
-        errorUtil.handleError(res, err);
+        errorHelper.error(res, err);
     });
 });
 

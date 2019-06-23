@@ -4,9 +4,9 @@ const methodOverride = require('method-override');
 const expressValidator = require('express-validator');
 const morgan = require('morgan');
 
-require(__root + 'src/config/database');
-require(__root + 'src/config/environment');
-const logger = require(__app + 'services/logger');
+require('../../src/config/database');
+require('../../src/config/environment');
+const logger = require('../app/services/logger');
 
 module.exports = () => {
     const app = express();
@@ -44,8 +44,8 @@ module.exports = () => {
         res.status(200).json({message: 'API works.'});
     });
 
-    const auth = require(__root + 'src/app/routes/auth');
-    const authors = require(__root + 'src/app/routes/authors');
+    const auth = require('../app/routes/auth');
+    const authors = require('../app/routes/authors');
     
     app.use('/api/auth', auth);
     app.use('/api/authors', authors);
